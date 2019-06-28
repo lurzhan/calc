@@ -1,34 +1,37 @@
-CC = gcc
-CF = -Wall -O3
+CC := gcc
+CF := -Wall -O3
 
-OBJ = obj/calc-lex.o obj/calc-bison.o
+flex-sources := src/calc.l
+bison-sources := src/calc.y
 
-all: bin/calc
+flex-gen-sources := $(patsubst %.l, %-flex.c, $(flex-sources))
+bison-gen-sources := $(patsubst %.y, %-bison.c, $(bison-sources))
+bison-gen-headers := $(patsubst %.y, %-bison.h, $(bison-sources))
 
-bin/calc: $(OBJ)
-	$(CC) -lfl $(OBJ) -o $@
+sources := $(bison-gen-sources) $(flex-gen-sources)
+objects := $(patsubst %.c, %.o, $(patsubst src%, obj%, $(sources)))
 
-obj/%.o: src/%.c
+target: bin/calc
+
+bin/calc: $(objects)
+	$(CC) -lfl $^ -o $@
+
+$(objects): obj/%.o: src/%.c
 	$(CC) $(CF) -c $< -o $@
 
-obj/calc-bison.o: src/calc-bison.c
-obj/calc-lex.o: src/calc-lex.c
+$(flex-gen-sources): src/%-flex.c: src/%.l
+	flex -o $@ $<
 
-src/calc-lex.c: flex
-src/calc-bison.c: bison
+$(bison-gen-sources): src/%-bison.c: src/%.y
+	bison -d -o $@ $<
 
-flex: src/calc.l
-	flex -o src/calc-lex.c src/calc.l
-
-bison: src/calc.y
-	bison -d -o src/calc-bison.c src/calc.y
-
+.PHONY: setup
 setup:
 	mkdir -p bin
 	mkdir -p obj
 
+.PHONY: clean
 clean:
-	rm -rf bin/*
 	rm -rf obj/*
-
-.PHONY: all clean setup
+	rm -f bin/calc
+	rm -f $(flex-gen-sources) $(bison-gen-sources) $(bison-gen-headers)
