@@ -46,7 +46,13 @@ extern int yydebug;
   enum yytokentype
   {
     INT = 258,
-    STRING = 259
+    LBRACKET = 259,
+    RBRACKET = 260,
+    EOL = 261,
+    PLUS = 262,
+    MINUS = 263,
+    MUL = 264,
+    DIV = 265
   };
 #endif
 
@@ -55,12 +61,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 21 "src/calc.y" /* yacc.c:1909  */
+#line 12 "src/calc.y" /* yacc.c:1909  */
 
   int ival;
-  char *sval;
 
-#line 64 "src/calc-bison.h" /* yacc.c:1909  */
+#line 69 "src/calc-bison.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
