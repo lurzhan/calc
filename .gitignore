@@ -1,3 +1,6 @@
 bin/calc
 obj/
+src/calc-bison.c
+src/calc-bison.h
+src/calc-flex.c
 *.swp
